@@ -6,24 +6,67 @@ namespace Battleships
     {
         static void Main(string[] args)
         {
-            // initialize P1 board
-            char[,] playerOnePlot = new char[10, 10];
+
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            char[,] playerOneBoard = new char[10, 10];
+            char[,] playerTwoBoard = new char[10, 10];
+            playerOneBoard = InitialisePlayer("Player one");
+            ChangePlayer();
+            playerTwoBoard = InitialisePlayer("Player two");
+
+        }
+
+        static void ChangePlayer()
+        {
+            Console.WriteLine("Press key to clear screen and change player");
+            Console.ReadKey();
+            Console.Clear();
+            Console.WriteLine("New player press key to resume");
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+        static char[,] InitialisePlayer(string playerName)
+        {
+
+            Console.Clear();
+            char[,] board = new char[10, 10];
             for (int y = 0; y < 10; y++)
             {
                 for (int x = 0; x < 10; x++)
                 {
-                    playerOnePlot[x,y] = '~';
+                    board[x, y] = '·';
                 }
             }
+            DisplayBoard(board);
+            Console.WriteLine("\n" + playerName + ": Enter first location of Carrier (5)");
+            board = SetupGame(board, 5);
+            Console.Clear();
 
-            DisplayBoard(playerOnePlot);
-            Console.WriteLine("\nPlayer one Enter first location of destroyer (5)");
-            SetupGame(playerOnePlot, 3);
-            DisplayBoard(playerOnePlot);
+            DisplayBoard(board);
+            Console.WriteLine("\n" + playerName + ": Enter first location of Battleship (4)");
+            board = SetupGame(board, 4);
+            Console.Clear();
 
+            DisplayBoard(board);
+            Console.WriteLine("\n" + playerName + ": Enter first location of Destroyer (3)");
+            board = SetupGame(board, 3);
+            Console.Clear();
 
+            DisplayBoard(board);
+            Console.WriteLine("\n" + playerName + ": Enter first location of Submarine (3)");
+            board = SetupGame(board, 3);
+            Console.Clear();
 
+            DisplayBoard(board);
+            Console.WriteLine("\n" + playerName + ": Enter first location of Patrol Boat (2)");
+            board = SetupGame(board, 2);
+            Console.Clear();
+            DisplayBoard(board);
+            return board;
         }
+
         static void DisplayBoard(char[,] board)
         {
             Console.WriteLine("   1 2 3 4 5 6 7 8 9 10");
@@ -49,7 +92,6 @@ namespace Battleships
             Console.WriteLine(x + "" + y);
             Console.Write("Which direction should the battleship point? (N/E/S/W) ");
             char dir = char.ToLower(Console.ReadKey().KeyChar);
-            int dirInt;
             Console.Write("\n");
             int xFact = 0;
             int yFact = 0;
@@ -57,23 +99,35 @@ namespace Battleships
             {
                 yFact = -1;
             }
-            if (dir == 's')
+            else if (dir == 's')
             {
                 yFact = 1;
             }
-            if (dir == 'e')
-            {
-                xFact = -1;
-            }
-            if (dir == 'w')
+            else if (dir == 'e')
             {
                 xFact = 1;
             }
-
-            for (int i = 0; i < shipLength; i++)
+            else if (dir == 'w')
             {
-                board[x, y] = 'X';
+                xFact = -1;
             }
+
+            if (xFact != 0) // horizontal placement
+            {
+                for (int i = 0; Math.Abs(i) < shipLength; i += xFact)
+                {
+                    board[i + x, y] = '~';
+                }
+            }
+
+            if (yFact != 0) // vertical placement
+            {
+                for (int n = 0; Math.Abs(n) < shipLength; n += yFact)
+                {
+                    board[x, n + y] = 'I';
+                }
+            }
+
 
             return board;
         }
