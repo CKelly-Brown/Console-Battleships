@@ -9,28 +9,104 @@ namespace Battleships
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
+            Console.WriteLine("Enter Player 1 Name: ");
+            string playerOneName = Console.ReadLine();
+
+            Console.WriteLine("Enter Player 2 Name: ");
+            string playerTwoName = Console.ReadLine();
+
             char[,] playerOneBoard = new char[10, 10];
             char[,] playerTwoBoard = new char[10, 10];
-            playerOneBoard = InitialisePlayer("Player one");
+
+            playerOneBoard = InitialisePlayer(playerOneName);
             ChangePlayer();
-            playerTwoBoard = InitialisePlayer("Player two");
+            Console.Clear();
+            playerTwoBoard = InitialisePlayer(playerTwoName);
+
+            // create guess maps
+
+            char[,] playerOneGuessMap = new char[10, 10];
+            playerOneGuessMap = NewBoard();
+
+            char[,] playerTwoGuessMap = new char[10, 10];
+            playerTwoGuessMap = NewBoard();
+
+            bool gameEnded = false;
+            int round = 1;
+
+            while (gameEnded == false)
+            {
+                ChangePlayer();
+                if (round % 2 == 1)   // player 1's go
+                {
+                    DisplayBoard(playerOneGuessMap);
+                    Console.WriteLine();
+                    DisplayBoard(playerOneBoard);
+                    Console.WriteLine(playerOneName + ": Enter guess coordinates: ");
+                    string guess = Console.ReadLine();
+                    var guessIndexCoords = CoordToIndex(guess);
+                    if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
+                    {
+                        playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                        playerOneGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                        Console.Clear();
+                        DisplayBoard(playerOneGuessMap);
+                        DisplayBoard(playerOneBoard);
+                        Console.WriteLine("\n" + guess + " HIT!");
+                    }
+                    else
+                    {
+                        playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                        playerOneGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                        Console.Clear();
+                        DisplayBoard(playerOneGuessMap);
+                        DisplayBoard(playerOneBoard);
+                        Console.WriteLine("\n" + guess + " MISS!");
+                    }
+                }
+                else    // player 2's go
+                {
+                    DisplayBoard(playerTwoGuessMap);
+                    Console.WriteLine();
+                    DisplayBoard(playerTwoBoard);
+                    Console.WriteLine(playerTwoName + ": Enter guess coordinates: ");
+                    string guess = Console.ReadLine();
+                    var guessIndexCoords = CoordToIndex(guess);
+                    if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
+                    {
+                        playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                        playerTwoGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                        Console.Clear();
+                        DisplayBoard(playerTwoGuessMap);
+                        DisplayBoard(playerTwoBoard);
+                        Console.WriteLine("\n" + guess + " HIT!");
+                    }
+                    else
+                    {
+                        playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                        playerTwoGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                        Console.Clear();
+                        DisplayBoard(playerTwoGuessMap);
+                        DisplayBoard(playerTwoBoard);
+                        Console.WriteLine("\n" + guess + " MISS!");
+                    }
+                }
+                round++;
+            }
 
         }
 
-        static void ChangePlayer()
+        static Tuple<int, int> CoordToIndex(string coord)
         {
-            Console.WriteLine("Press key to clear screen and change player");
-            Console.ReadKey();
-            Console.Clear();
-            Console.WriteLine("New player press key to resume");
-            Console.ReadKey();
-            Console.Clear();
+            int x = Int32.Parse(coord.Remove(0,1)) - 1;
+            int y = char.ToUpper(coord[0]) - 64 - 1; // ABC to 012
+
+            var indexCoords = new Tuple<int, int>(x, y);
+            return indexCoords;
         }
 
-        static char[,] InitialisePlayer(string playerName)
+        static char[,] NewBoard()
         {
-
-            Console.Clear();
             char[,] board = new char[10, 10];
             for (int y = 0; y < 10; y++)
             {
@@ -39,29 +115,48 @@ namespace Battleships
                     board[x, y] = '·';
                 }
             }
+            return board;
+        }
+
+        static void ChangePlayer()
+        {
+            Console.WriteLine("Press key to clear screen and change player");
+            Console.ReadKey();
+            Console.Clear();
+            Console.WriteLine("Change player and press key to resume");
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+        static char[,] InitialisePlayer(string playerName)
+        {
+
+            Console.Clear();
+            char[,] board = NewBoard();
+
             DisplayBoard(board);
             Console.WriteLine("\n" + playerName + ": Enter first location of Carrier (5)");
-            board = SetupGame(board, 5);
+            board = PlaceFleet(board, 5);
             Console.Clear();
 
             DisplayBoard(board);
             Console.WriteLine("\n" + playerName + ": Enter first location of Battleship (4)");
-            board = SetupGame(board, 4);
+            board = PlaceFleet(board, 4);
             Console.Clear();
 
             DisplayBoard(board);
             Console.WriteLine("\n" + playerName + ": Enter first location of Destroyer (3)");
-            board = SetupGame(board, 3);
+            board = PlaceFleet(board, 3);
             Console.Clear();
 
             DisplayBoard(board);
             Console.WriteLine("\n" + playerName + ": Enter first location of Submarine (3)");
-            board = SetupGame(board, 3);
+            board = PlaceFleet(board, 3);
             Console.Clear();
 
             DisplayBoard(board);
             Console.WriteLine("\n" + playerName + ": Enter first location of Patrol Boat (2)");
-            board = SetupGame(board, 2);
+            board = PlaceFleet(board, 2);
             Console.Clear();
             DisplayBoard(board);
             return board;
@@ -75,7 +170,7 @@ namespace Battleships
             {
                 Console.Write(" " + labels[y] + " ");
 
-                for (int x = 0; x < board.GetLength(1); x++)
+                for (int x = 0; x < 10; x++)
                 {
                     Console.Write(board[x, y]);
                     Console.Write(" ");
@@ -84,12 +179,12 @@ namespace Battleships
             }
         }
 
-        static char[,] SetupGame(char[,] board, int shipLength)
+        static char[,] PlaceFleet(char[,] board, int shipLength)
         {
             string coord = Console.ReadLine(); // A1
-            int x = (Int16.Parse(Convert.ToString(coord[1])) - 1);
-            int y = char.ToUpper(coord[0]) - 64 - 1; // ABC to 012
-            Console.WriteLine(x + "" + y);
+            var indexCoords = CoordToIndex(coord);
+            int x = indexCoords.Item1;
+            int y = indexCoords.Item2;
             Console.Write("Which direction should the battleship point? (N/E/S/W) ");
             char dir = char.ToLower(Console.ReadKey().KeyChar);
             Console.Write("\n");
@@ -116,7 +211,7 @@ namespace Battleships
             {
                 for (int i = 0; Math.Abs(i) < shipLength; i += xFact)
                 {
-                    board[i + x, y] = '~';
+                    board[i + x, y] = '=';
                 }
             }
 
