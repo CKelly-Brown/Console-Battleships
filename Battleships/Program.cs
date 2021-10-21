@@ -43,7 +43,7 @@ namespace Battleships
                     Console.WriteLine();
                     DisplayBoard(playerOneBoard);
                     Console.WriteLine(playerOneName + ": Enter guess coordinates (A1/a1): ");
-                    var guessIndexCoords = EnterCoordToIndex();
+                    var guessIndexCoords = AskInputCoordToIndex();
                     if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
                     {
                         playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
@@ -69,7 +69,7 @@ namespace Battleships
                     Console.WriteLine();
                     DisplayBoard(playerTwoBoard);
                     Console.WriteLine(playerTwoName + ": Enter guess coordinates: ");
-                    var guessIndexCoords = EnterCoordToIndex();
+                    var guessIndexCoords = AskInputCoordToIndex();
                     if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
                     {
                         playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
@@ -94,7 +94,7 @@ namespace Battleships
 
         }
 
-        static Tuple<int, int> EnterCoordToIndex()
+        static Tuple<int, int> AskInputCoordToIndex()
         {
             while (true)
             {
@@ -103,6 +103,10 @@ namespace Battleships
                     string coord = Console.ReadLine();
                     int x = Int32.Parse(coord.Remove(0, 1)) - 1;
                     int y = char.ToUpper(coord[0]) - 64 - 1; // ABC to 012
+                    if (x>9 || y>9 || x<0 || y<0)
+                    {
+                        throw new Exception("Coords invalid");
+                    }
 
                     var indexCoords = new Tuple<int, int>(x, y);
                     return indexCoords;
@@ -110,8 +114,8 @@ namespace Battleships
                 catch (Exception ex)
                 {
 
-                    Console.Write("Error info:" + ex.Message);
-                    Console.WriteLine("Try again");
+                    Console.Write("Error info: " + ex.Message);
+                    Console.WriteLine(" Try again!");
                 }
             }
         }
@@ -146,29 +150,25 @@ namespace Battleships
             char[,] board = NewBoard();
 
             DisplayBoard(board);
-            Console.WriteLine("\n" + playerName + ": Enter first location of Carrier (5)");
-            board = PlaceFleet(board, 5);
+            board = PlaceFleet(board, 5, "Carrier", playerName);
             Console.Clear();
 
             DisplayBoard(board);
-            Console.WriteLine("\n" + playerName + ": Enter first location of Battleship (4)");
-            board = PlaceFleet(board, 4);
+            board = PlaceFleet(board, 4, "Battleship", playerName);
             Console.Clear();
 
             DisplayBoard(board);
-            Console.WriteLine("\n" + playerName + ": Enter first location of Destroyer (3)");
-            board = PlaceFleet(board, 3);
+            board = PlaceFleet(board, 3, "Destroyer", playerName);
             Console.Clear();
 
             DisplayBoard(board);
-            Console.WriteLine("\n" + playerName + ": Enter first location of Submarine (3)");
-            board = PlaceFleet(board, 3);
+            board = PlaceFleet(board, 3, "Submarine", playerName);
             Console.Clear();
 
             DisplayBoard(board);
-            Console.WriteLine("\n" + playerName + ": Enter first location of Patrol Boat (2)");
-            board = PlaceFleet(board, 2);
+            board = PlaceFleet(board, 2, "Patrol Boat", playerName);
             Console.Clear();
+
             DisplayBoard(board);
             return board;
         }
@@ -190,51 +190,89 @@ namespace Battleships
             }
         }
 
-        static char[,] PlaceFleet(char[,] board, int shipLength)
+        static char[,] PlaceFleet(char[,] board, int shipLength, string ship, string playerName)
         {
-            var indexCoords = EnterCoordToIndex();
-            int x = indexCoords.Item1;
-            int y = indexCoords.Item2;
-            Console.Write("Which direction should the battleship point? (arrow key) ");
-            var dir = Console.ReadKey();
-            Console.Write("\n");
-            int xFact = 0;
-            int yFact = 0;
-            if (dir.Key == ConsoleKey.UpArrow)
+            while (true)
             {
-                yFact = -1;
-            }
-            else if (dir.Key == ConsoleKey.DownArrow)
-            {
-                yFact = 1;
-            }
-            else if (dir.Key == ConsoleKey.RightArrow)
-            {
-                xFact = 1;
-            }
-            else if (dir.Key == ConsoleKey.LeftArrow)
-            {
-                xFact = -1;
-            }
-
-            if (xFact != 0) // horizontal placement
-            {
-                for (int i = 0; Math.Abs(i) < shipLength; i += xFact)
+                try
                 {
-                    board[i + x, y] = '=';
+                    Console.WriteLine("\n" + playerName + ": Enter first location of " + ship + " (" + shipLength + ")");
+                    var indexCoords = AskInputCoordToIndex();
+                    ConsoleKeyInfo dir;
+                    int x = indexCoords.Item1;
+                    int y = indexCoords.Item2;
+                    int xFact = 0;
+                    int yFact = 0;
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Write("Which direction should the battleship point? (arrow key) ");
+                            dir = Console.ReadKey();
+                            Console.Write("\n");
+                            if (dir.Key == ConsoleKey.UpArrow)
+                            {
+                                yFact = -1;
+                                break;
+                            }
+                            else if (dir.Key == ConsoleKey.DownArrow)
+                            {
+                                yFact = 1;
+                                break;
+                            }
+                            else if (dir.Key == ConsoleKey.RightArrow)
+                            {
+                                xFact = 1;
+                                break;
+                            }
+                            else if (dir.Key == ConsoleKey.LeftArrow)
+                            {
+                                xFact = -1;
+                                break;
+                            }
+                            else
+                            {
+                                throw new Exception(); // Input is not arrow key
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("no");
+                        }
+                    }
+
+                    if (xFact != 0) // horizontal placement
+                    {
+                        for (int i = 0; Math.Abs(i) < shipLength; i += xFact)
+                        {
+                            if (board[i + x, y] != '·')
+                            {
+                                throw new Exception();
+                            }
+                            board[i + x, y] = '=';
+                        }
+                    }
+
+                    if (yFact != 0) // vertical placement
+                    {
+                        for (int n = 0; Math.Abs(n) < shipLength; n += yFact)
+                        {
+                            if (board[x, n + y] != '·')
+                            {
+                                throw new Exception();
+                            }
+                            board[x, n + y] = 'I';
+                        }
+                    }
+
+
+                    return board;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("\nShip could not be placed on that location, try again");
                 }
             }
-
-            if (yFact != 0) // vertical placement
-            {
-                for (int n = 0; Math.Abs(n) < shipLength; n += yFact)
-                {
-                    board[x, n + y] = 'I';
-                }
-            }
-
-
-            return board;
         }
     }
 }
