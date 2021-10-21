@@ -42,9 +42,8 @@ namespace Battleships
                     DisplayBoard(playerOneGuessMap);
                     Console.WriteLine();
                     DisplayBoard(playerOneBoard);
-                    Console.WriteLine(playerOneName + ": Enter guess coordinates: ");
-                    string guess = Console.ReadLine();
-                    var guessIndexCoords = CoordToIndex(guess);
+                    Console.WriteLine(playerOneName + ": Enter guess coordinates (A1/a1): ");
+                    var guessIndexCoords = EnterCoordToIndex();
                     if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
                     {
                         playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
@@ -52,7 +51,7 @@ namespace Battleships
                         Console.Clear();
                         DisplayBoard(playerOneGuessMap);
                         DisplayBoard(playerOneBoard);
-                        Console.WriteLine("\n" + guess + " HIT!");
+                        Console.WriteLine("\nHIT!");
                     }
                     else
                     {
@@ -61,7 +60,7 @@ namespace Battleships
                         Console.Clear();
                         DisplayBoard(playerOneGuessMap);
                         DisplayBoard(playerOneBoard);
-                        Console.WriteLine("\n" + guess + " MISS!");
+                        Console.WriteLine("\nMISS!");
                     }
                 }
                 else    // player 2's go
@@ -70,8 +69,7 @@ namespace Battleships
                     Console.WriteLine();
                     DisplayBoard(playerTwoBoard);
                     Console.WriteLine(playerTwoName + ": Enter guess coordinates: ");
-                    string guess = Console.ReadLine();
-                    var guessIndexCoords = CoordToIndex(guess);
+                    var guessIndexCoords = EnterCoordToIndex();
                     if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
                     {
                         playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
@@ -79,7 +77,7 @@ namespace Battleships
                         Console.Clear();
                         DisplayBoard(playerTwoGuessMap);
                         DisplayBoard(playerTwoBoard);
-                        Console.WriteLine("\n" + guess + " HIT!");
+                        Console.WriteLine("\nHIT!");
                     }
                     else
                     {
@@ -88,7 +86,7 @@ namespace Battleships
                         Console.Clear();
                         DisplayBoard(playerTwoGuessMap);
                         DisplayBoard(playerTwoBoard);
-                        Console.WriteLine("\n" + guess + " MISS!");
+                        Console.WriteLine("\nMISS!");
                     }
                 }
                 round++;
@@ -96,13 +94,26 @@ namespace Battleships
 
         }
 
-        static Tuple<int, int> CoordToIndex(string coord)
+        static Tuple<int, int> EnterCoordToIndex()
         {
-            int x = Int32.Parse(coord.Remove(0,1)) - 1;
-            int y = char.ToUpper(coord[0]) - 64 - 1; // ABC to 012
+            while (true)
+            {
+                try
+                {
+                    string coord = Console.ReadLine();
+                    int x = Int32.Parse(coord.Remove(0, 1)) - 1;
+                    int y = char.ToUpper(coord[0]) - 64 - 1; // ABC to 012
 
-            var indexCoords = new Tuple<int, int>(x, y);
-            return indexCoords;
+                    var indexCoords = new Tuple<int, int>(x, y);
+                    return indexCoords;
+                }
+                catch (Exception ex)
+                {
+
+                    Console.Write("Error info:" + ex.Message);
+                    Console.WriteLine("Try again");
+                }
+            }
         }
 
         static char[,] NewBoard()
@@ -181,28 +192,27 @@ namespace Battleships
 
         static char[,] PlaceFleet(char[,] board, int shipLength)
         {
-            string coord = Console.ReadLine(); // A1
-            var indexCoords = CoordToIndex(coord);
+            var indexCoords = EnterCoordToIndex();
             int x = indexCoords.Item1;
             int y = indexCoords.Item2;
-            Console.Write("Which direction should the battleship point? (N/E/S/W) ");
-            char dir = char.ToLower(Console.ReadKey().KeyChar);
+            Console.Write("Which direction should the battleship point? (arrow key) ");
+            var dir = Console.ReadKey();
             Console.Write("\n");
             int xFact = 0;
             int yFact = 0;
-            if (dir == 'n')
+            if (dir.Key == ConsoleKey.UpArrow)
             {
                 yFact = -1;
             }
-            else if (dir == 's')
+            else if (dir.Key == ConsoleKey.DownArrow)
             {
                 yFact = 1;
             }
-            else if (dir == 'e')
+            else if (dir.Key == ConsoleKey.RightArrow)
             {
                 xFact = 1;
             }
-            else if (dir == 'w')
+            else if (dir.Key == ConsoleKey.LeftArrow)
             {
                 xFact = -1;
             }
