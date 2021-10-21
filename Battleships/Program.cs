@@ -192,6 +192,7 @@ namespace Battleships
 
         static char[,] PlaceFleet(char[,] board, int shipLength, string ship, string playerName)
         {
+            char[,] boardCopy = board;
             while (true)
             {
                 try
@@ -247,9 +248,13 @@ namespace Battleships
                         {
                             if (board[i + x, y] != '·')
                             {
+                                board = boardCopy;
                                 throw new Exception();
                             }
-                            board[i + x, y] = '=';
+                            else
+                            {
+                                board[i + x, y] = '=';
+                            }
                         }
                     }
 
@@ -259,9 +264,13 @@ namespace Battleships
                         {
                             if (board[x, n + y] != '·')
                             {
+                                board = boardCopy;
                                 throw new Exception();
                             }
-                            board[x, n + y] = 'I';
+                            else
+                            {
+                                board[x, n + y] = 'I';
+                            }
                         }
                     }
 
