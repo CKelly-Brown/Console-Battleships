@@ -9,11 +9,44 @@ namespace Battleships
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            Console.WriteLine("Enter Player 1 Name: ");
-            string playerOneName = Console.ReadLine();
+            string playerOneName;
+            string playerTwoName;
 
-            Console.WriteLine("Enter Player 2 Name: ");
-            string playerTwoName = Console.ReadLine();
+            while (true)
+            {
+                try
+                {
+                    Console.WriteLine("Enter Player 1 Name: ");
+                    playerOneName = Console.ReadLine();
+                    if (playerOneName.Length < 1)
+                    {
+                        throw new Exception();
+                    }
+                    break;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Invalid format, Try again\n");
+                }
+            }
+
+            while (true)
+            {
+                try
+                {
+                    Console.WriteLine("Enter Player 2 Name: ");
+                    playerTwoName = Console.ReadLine();
+                    if (playerTwoName.Length < 1)
+                    {
+                        throw new Exception();
+                    }
+                    break;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Invalid format, Try again\n");
+                }
+            }
 
             char[,] playerOneBoard = new char[10, 10];
             char[,] playerTwoBoard = new char[10, 10];
@@ -39,54 +72,99 @@ namespace Battleships
                 ChangePlayer();
                 if (round % 2 == 1)   // player 1's go
                 {
-                    DisplayBoard(playerOneGuessMap);
-                    Console.WriteLine();
-                    DisplayBoard(playerOneBoard);
-                    Console.WriteLine(playerOneName + ": Enter guess coordinates (A1/a1): ");
-                    var guessIndexCoords = AskInputCoordToIndex();
-                    if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
+                    while (true)
                     {
-                        playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
-                        playerOneGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
-                        Console.Clear();
-                        DisplayBoard(playerOneGuessMap);
-                        DisplayBoard(playerOneBoard);
-                        Console.WriteLine("\nHIT!");
-                    }
-                    else
-                    {
-                        playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
-                        playerOneGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
-                        Console.Clear();
-                        DisplayBoard(playerOneGuessMap);
-                        DisplayBoard(playerOneBoard);
-                        Console.WriteLine("\nMISS!");
+                        try
+                        {
+                            DisplayBoard(playerOneGuessMap);
+                            Console.WriteLine();
+                            DisplayBoard(playerOneBoard);
+                            Console.WriteLine(playerOneName + ": Enter guess coordinates (A1/a1): ");
+                            var guessIndexCoords = AskInputCoordToIndex();
+                            if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '·')
+                            {
+                                playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                                playerOneGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                                Console.Clear();
+                                DisplayBoard(playerOneGuessMap);
+                                DisplayBoard(playerOneBoard);
+                                Console.WriteLine("\nMISS!");
+                                break;
+                            }
+                            else if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == 'I' || playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '-')
+                            {
+                                playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                                playerOneGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                                Console.Clear();
+                                DisplayBoard(playerOneGuessMap);
+                                DisplayBoard(playerOneBoard);
+                                Console.WriteLine("\nHIT!");
+                                if (WinCheck(playerOneBoard))
+                                {
+                                    Console.WriteLine(playerOneName + " wins! Press key to close.");
+                                    Console.ReadKey();
+                                    gameEnded = true;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                throw new Exception("You've already guessed there, try again.\n");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                     }
                 }
+
                 else    // player 2's go
                 {
-                    DisplayBoard(playerTwoGuessMap);
-                    Console.WriteLine();
-                    DisplayBoard(playerTwoBoard);
-                    Console.WriteLine(playerTwoName + ": Enter guess coordinates: ");
-                    var guessIndexCoords = AskInputCoordToIndex();
-                    if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] != '·')
+                    while (true)
                     {
-                        playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
-                        playerTwoGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
-                        Console.Clear();
-                        DisplayBoard(playerTwoGuessMap);
-                        DisplayBoard(playerTwoBoard);
-                        Console.WriteLine("\nHIT!");
-                    }
-                    else
-                    {
-                        playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
-                        playerTwoGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
-                        Console.Clear();
-                        DisplayBoard(playerTwoGuessMap);
-                        DisplayBoard(playerTwoBoard);
-                        Console.WriteLine("\nMISS!");
+                        try
+                        {
+                            DisplayBoard(playerTwoGuessMap);
+                            Console.WriteLine();
+                            DisplayBoard(playerTwoBoard);
+                            Console.WriteLine(playerTwoName + ": Enter guess coordinates: ");
+                            var guessIndexCoords = AskInputCoordToIndex();
+                            if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '·')
+                            {
+                                playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                                playerTwoGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
+                                Console.Clear();
+                                DisplayBoard(playerTwoGuessMap);
+                                DisplayBoard(playerTwoBoard);
+                                Console.WriteLine("\nMISS!");
+                                break;
+                            }
+                            else if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == 'I' || playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '-')
+                            {
+                                playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                                playerTwoGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
+                                Console.Clear();
+                                DisplayBoard(playerTwoGuessMap);
+                                DisplayBoard(playerTwoBoard);
+                                Console.WriteLine("\nHIT!");
+                                if (WinCheck(playerOneBoard))
+                                {
+                                    Console.WriteLine(playerTwoName + " wins! Press key to close.");
+                                    Console.ReadKey();
+                                    gameEnded = true;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                throw new Exception("You've already guessed there, try again.\n");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                     }
                 }
                 round++;
@@ -103,7 +181,7 @@ namespace Battleships
                     string coord = Console.ReadLine();
                     int x = Int32.Parse(coord.Remove(0, 1)) - 1;
                     int y = char.ToUpper(coord[0]) - 64 - 1; // ABC to 012
-                    if (x>9 || y>9 || x<0 || y<0)
+                    if (x > 9 || y > 9 || x < 0 || y < 0)
                     {
                         throw new Exception("Coords invalid");
                     }
@@ -192,7 +270,7 @@ namespace Battleships
 
         static char[,] PlaceFleet(char[,] board, int shipLength, string ship, string playerName)
         {
-            char[,] boardCopy = board;
+            char[,] boardCopy = board.Clone() as char[,];
             while (true)
             {
                 try
@@ -238,7 +316,7 @@ namespace Battleships
                         }
                         catch (Exception)
                         {
-                            Console.WriteLine("no");
+                            Console.WriteLine("Direction input must be an arrow key");
                         }
                     }
 
@@ -246,14 +324,13 @@ namespace Battleships
                     {
                         for (int i = 0; Math.Abs(i) < shipLength; i += xFact)
                         {
-                            if (board[i + x, y] != '·')
+                            if (board[i + x, y] == '·')
                             {
-                                board = boardCopy;
-                                throw new Exception();
+                                board[i + x, y] = '=';
                             }
                             else
                             {
-                                board[i + x, y] = '=';
+                                throw new Exception();
                             }
                         }
                     }
@@ -262,14 +339,13 @@ namespace Battleships
                     {
                         for (int n = 0; Math.Abs(n) < shipLength; n += yFact)
                         {
-                            if (board[x, n + y] != '·')
+                            if (board[x, n + y] == '·')
                             {
-                                board = boardCopy;
-                                throw new Exception();
+                                board[x, n + y] = 'I';
                             }
                             else
                             {
-                                board[x, n + y] = 'I';
+                                throw new Exception();
                             }
                         }
                     }
@@ -279,9 +355,26 @@ namespace Battleships
                 }
                 catch (Exception)
                 {
+                    board = boardCopy.Clone() as char[,];
                     Console.WriteLine("\nShip could not be placed on that location, try again");
                 }
             }
+        }
+
+        static bool WinCheck(char[,] board)
+        {
+            bool haveWon = true;
+            for (int y = 0; y < 10; y++)
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    if (board[x, y] == '=' || board[x, y] == 'I')
+                    {
+                        haveWon = false;
+                    }
+                }
+            }
+            return haveWon;
         }
     }
 }
