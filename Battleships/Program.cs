@@ -72,6 +72,7 @@ namespace Battleships
                 ChangePlayer();
                 if (round % 2 == 1)   // player 1's go
                 {
+                    var guessIndexCoords = new Tuple<int, int>(11,11); // values should be replaced but if not, 11 will ensure error
                     while (true)
                     {
                         try
@@ -79,8 +80,8 @@ namespace Battleships
                             DisplayBoard(playerOneGuessMap);
                             Console.WriteLine();
                             DisplayBoard(playerOneBoard);
-                            Console.WriteLine(playerOneName + ": Enter guess coordinates (A1/a1): ");
-                            var guessIndexCoords = AskInputCoordToIndex();
+                            Console.WriteLine(playerOneName + ": Enter guess coordinates: ");
+                            guessIndexCoords = AskInputCoordToIndex();
                             if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '·')
                             {
                                 playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
@@ -91,7 +92,7 @@ namespace Battleships
                                 Console.WriteLine("\nMISS!");
                                 break;
                             }
-                            else if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == 'I' || playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '-')
+                            else if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == 'I' || playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '=')
                             {
                                 playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
                                 playerOneGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
@@ -101,7 +102,7 @@ namespace Battleships
                                 Console.WriteLine("\nHIT!");
                                 if (WinCheck(playerOneBoard))
                                 {
-                                    Console.WriteLine(playerOneName + " wins! Press key to close.");
+                                    Console.WriteLine("\n" + playerOneName + " wins! Press key to close.");
                                     Console.ReadKey();
                                     gameEnded = true;
                                 }
@@ -121,6 +122,7 @@ namespace Battleships
 
                 else    // player 2's go
                 {
+                    var guessIndexCoords = new Tuple<int, int>(11, 11); // values should be replaced but if not, 11 will ensure error
                     while (true)
                     {
                         try
@@ -129,7 +131,7 @@ namespace Battleships
                             Console.WriteLine();
                             DisplayBoard(playerTwoBoard);
                             Console.WriteLine(playerTwoName + ": Enter guess coordinates: ");
-                            var guessIndexCoords = AskInputCoordToIndex();
+                            guessIndexCoords = AskInputCoordToIndex();
                             if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '·')
                             {
                                 playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
@@ -140,7 +142,7 @@ namespace Battleships
                                 Console.WriteLine("\nMISS!");
                                 break;
                             }
-                            else if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == 'I' || playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '-')
+                            else if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == 'I' || playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '=')
                             {
                                 playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
                                 playerTwoGuessMap[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'X';
@@ -150,7 +152,7 @@ namespace Battleships
                                 Console.WriteLine("\nHIT!");
                                 if (WinCheck(playerOneBoard))
                                 {
-                                    Console.WriteLine(playerTwoName.ToUpper() + " WINS! Press key to close.");
+                                    Console.WriteLine("\n" + playerTwoName.ToUpper() + " WINS! Press key to close.");
                                     Console.ReadKey();
                                     gameEnded = true;
                                 }
@@ -189,11 +191,9 @@ namespace Battleships
                     var indexCoords = new Tuple<int, int>(x, y);
                     return indexCoords;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-
-                    Console.Write("Error info: " + ex.Message);
-                    Console.WriteLine(" Try again!");
+                    Console.WriteLine("Invalid input, try again!\n");
                 }
             }
         }
