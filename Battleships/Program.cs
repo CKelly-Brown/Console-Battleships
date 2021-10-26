@@ -49,7 +49,6 @@ namespace Battleships
             char[,] playerTwoBoard = new char[10, 10];
 
             playerOneBoard = InitialisePlayer(playerOneName);
-            ChangePlayer();
             Console.Clear();
             playerTwoBoard = InitialisePlayer(playerTwoName);
 
@@ -190,7 +189,7 @@ namespace Battleships
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Invalid input, try again!\n");
+                    Console.WriteLine("Invalid input, try again!");
                 }
             }
         }
