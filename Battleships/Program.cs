@@ -192,7 +192,7 @@ namespace Battleships
 
         static char[,] PlaceFleet(char[,] board, int shipLength, string ship, string playerName)
         {
-            char[,] boardCopy = board;
+            char[,] boardCopy = board.Clone() as char[,];
             while (true)
             {
                 try
@@ -238,7 +238,7 @@ namespace Battleships
                         }
                         catch (Exception)
                         {
-                            Console.WriteLine("no");
+                            Console.WriteLine("Direction input must be an arrow key");
                         }
                     }
 
@@ -246,14 +246,13 @@ namespace Battleships
                     {
                         for (int i = 0; Math.Abs(i) < shipLength; i += xFact)
                         {
-                            if (board[i + x, y] != '·')
+                            if (board[i + x, y] == '·')
                             {
-                                board = boardCopy;
-                                throw new Exception();
+                                board[i + x, y] = '=';
                             }
                             else
                             {
-                                board[i + x, y] = '=';
+                                throw new Exception();
                             }
                         }
                     }
@@ -262,14 +261,13 @@ namespace Battleships
                     {
                         for (int n = 0; Math.Abs(n) < shipLength; n += yFact)
                         {
-                            if (board[x, n + y] != '·')
+                            if (board[x, n + y] == '·')
                             {
-                                board = boardCopy;
-                                throw new Exception();
+                                board[x, n + y] = 'I';
                             }
                             else
                             {
-                                board[x, n + y] = 'I';
+                                throw new Exception();
                             }
                         }
                     }
@@ -279,6 +277,7 @@ namespace Battleships
                 }
                 catch (Exception)
                 {
+                    board = boardCopy.Clone() as char[,];
                     Console.WriteLine("\nShip could not be placed on that location, try again");
                 }
             }
