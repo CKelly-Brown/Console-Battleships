@@ -150,7 +150,7 @@ namespace Battleships
                                 Console.WriteLine("\nHIT!");
                                 if (WinCheck(playerOneBoard))
                                 {
-                                    Console.WriteLine(playerTwoName + " wins! Press key to close.");
+                                    Console.WriteLine(playerTwoName.ToUpper() + " WINS! Press key to close.");
                                     Console.ReadKey();
                                     gameEnded = true;
                                 }
