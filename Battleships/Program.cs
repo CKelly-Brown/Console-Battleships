@@ -50,7 +50,7 @@ namespace Battleships
 
             playerOneBoard = InitialisePlayer(playerOneName);
             Console.WriteLine("\nAll ships placed, press key to continue");
-            Console.Read();
+            Console.ReadKey();
             Console.Clear();
             playerTwoBoard = InitialisePlayer(playerTwoName);
 
@@ -186,8 +186,9 @@ namespace Battleships
                     var indexCoords = new Tuple<int, int>(x, y);
                     return indexCoords;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     Console.WriteLine("Invalid input, try again!");
                 }
             }
