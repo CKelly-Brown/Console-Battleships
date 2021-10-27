@@ -49,26 +49,25 @@ namespace Battleships
             char[,] playerTwoBoard = new char[10, 10];
 
             playerOneBoard = InitialisePlayer(playerOneName);
+            Console.WriteLine("\nAll ships placed, press key to continue");
+            Console.Read();
             Console.Clear();
             playerTwoBoard = InitialisePlayer(playerTwoName);
 
             // create guess maps
 
-            char[,] playerOneGuessMap = new char[10, 10];
-            playerOneGuessMap = NewBoard();
-
-            char[,] playerTwoGuessMap = new char[10, 10];
-            playerTwoGuessMap = NewBoard();
+            char[,] playerOneGuessMap = NewBoard();
+            char[,] playerTwoGuessMap = NewBoard();
 
             bool gameEnded = false;
-            int round = 1;
+            Random startingPlayer = new Random();
+            int round = startingPlayer.Next(1,2);
 
             while (gameEnded == false)
             {
-                ChangePlayer();
                 if (round % 2 == 1)   // player 1's go
                 {
-                    var guessIndexCoords = new Tuple<int, int>(11,11); // values should be replaced but if not, 11 will ensure error
+                    ChangePlayer(playerOneName);
                     while (true)
                     {
                         try
@@ -77,7 +76,7 @@ namespace Battleships
                             Console.WriteLine();
                             DisplayBoard(playerOneBoard);
                             Console.WriteLine(playerOneName + ": Enter guess coordinates: ");
-                            guessIndexCoords = AskInputCoordToIndex();
+                            var guessIndexCoords = AskInputCoordToIndex();
                             if (playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '·')
                             {
                                 playerTwoBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
@@ -118,7 +117,7 @@ namespace Battleships
 
                 else    // player 2's go
                 {
-                    var guessIndexCoords = new Tuple<int, int>(11, 11); // values should be replaced but if not, 11 will ensure error
+                    ChangePlayer(playerTwoName);
                     while (true)
                     {
                         try
@@ -127,7 +126,7 @@ namespace Battleships
                             Console.WriteLine();
                             DisplayBoard(playerTwoBoard);
                             Console.WriteLine(playerTwoName + ": Enter guess coordinates: ");
-                            guessIndexCoords = AskInputCoordToIndex();
+                            var guessIndexCoords = AskInputCoordToIndex();
                             if (playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] == '·')
                             {
                                 playerOneBoard[guessIndexCoords.Item1, guessIndexCoords.Item2] = 'O';
@@ -207,12 +206,12 @@ namespace Battleships
             return board;
         }
 
-        static void ChangePlayer()
+        static void ChangePlayer(string newPlayerName)
         {
-            Console.WriteLine("Press key to clear screen and change player");
+            Console.WriteLine("Press key to change player");
             Console.ReadKey();
             Console.Clear();
-            Console.WriteLine("Change player and press key to resume");
+            Console.WriteLine(newPlayerName + ": Press key to resume game");
             Console.ReadKey();
             Console.Clear();
         }
