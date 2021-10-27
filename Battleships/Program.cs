@@ -186,9 +186,8 @@ namespace Battleships
                     var indexCoords = new Tuple<int, int>(x, y);
                     return indexCoords;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine(ex);
                     Console.WriteLine("Invalid input, try again!");
                 }
             }
