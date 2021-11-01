@@ -145,7 +145,7 @@ namespace Battleships
                                 DisplayBoard(playerTwoGuessMap);
                                 DisplayBoard(playerTwoBoard);
                                 Console.WriteLine("\nHIT!");
-                                if (WinCheck(playerOneBoard))
+                                if (WinCheck(playerTwoBoard))
                                 {
                                     Console.WriteLine("\n" + playerTwoName.ToUpper() + " WINS! Press key to close.");
                                     Console.ReadKey();
